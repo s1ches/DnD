@@ -13,13 +13,13 @@ public class BattleController : ControllerBase
     public BattleController(IBattleRunner battleRunner) => _battleRunner = battleRunner;
     
     [HttpGet]
-    public async Task<string> GetBattleResult(string heroJson, string monsterJson)
+    public async Task<ActionResult<string>> GetBattleResult(string heroJson, string monsterJson)
     {
         var monster = JsonSerializer.Deserialize<Monster>(monsterJson);
         var hero = JsonSerializer.Deserialize<Hero>(heroJson);
         
         var battleResult = await _battleRunner.GetBattleResult(hero, monster);
 
-        return JsonSerializer.Serialize(battleResult);
+        return Ok(JsonSerializer.Serialize(battleResult));
     }
 }
