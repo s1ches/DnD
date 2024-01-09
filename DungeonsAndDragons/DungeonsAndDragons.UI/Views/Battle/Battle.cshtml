@@ -1,0 +1,97 @@
+@using DungeounsAndDragons.Domain.Models
+@model DungeonsAndDragons.UI.Models.BattleVm
+
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <title>Dungeons and Dragons Battles</title>
+    <link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+<div class="align-content-center">
+      @if(Model.Battle is not null){
+          <div class="battle">
+              <div class="battle-title">
+                  <h2 class="versus">@Model.Hero.Name vs @Model.Monster!.Name</h2>
+              </div>
+              <div class="battle-semantic">
+                  @foreach (var round in Model.Battle.Rounds)
+                  {
+                      <p class="round-start">Round</p>
+                      <div class="round">
+                          @foreach (var attack in round.Attacks)
+                          {
+                              <div class="attack-header">
+                                  <div class="attack-opponent">
+                                      <p>Attacking
+                                          @attack.Attacking.Name</p>
+                                  </div>
+                                  <div class="attack-opponent">
+                                      <p>Rakes @attack.Raking.Name</p>
+                                  </div>
+                              </div>
+                              <div class="attack-semantic">
+                                  @if (attack.HitType is HitType.CriticalMiss or HitType.Miss)
+                                  {
+                                      <p class="attack-attack">@attack.Attacking.Name do shitty
+                                          attack<span class="attack-span">@attack.NotModifiedAttack (+@attack.Attacking.AttackModifier) it's miss :(</span></p>
+                                  }
+                                  else if(attack.HitType is HitType.Hit)
+                                  {
+                                      <p class="attack-attack">@attack.Attacking.Name do good
+                                          attack<span class="attack-span">@attack.NotModifiedAttack (+@attack.Attacking.AttackModifier)</span></p>
+                                      <p class="attack-damage">@attack.Attacking.Name deals <span>@attack.NotModifiedDamage (+@attack.Attacking.DamageModifier) it's hit!:)</span></p>
+                                  }
+                                  else if(attack.HitType is HitType.CriticalHit)
+                                  {
+                                      <p class="attack-attack">@attack.Attacking.Name do perfect
+                                          attack<span class="attack-span">@attack.NotModifiedAttack (+@attack.Attacking.AttackModifier)</span></p>
+                                      <p class="attack-damage">@attack.Attacking.Name deals <span>(@attack.NotModifiedDamage (+@attack.Attacking.DamageModifier))* 2 it's critical hit!!!!</span></p>
+                                  }
+                                  <div class="attack-result">
+                                      <p>@Model.Hero.Name has @attack.CurrentHeroHp HealthPoints</p>
+                                      <p>@Model.Monster.Name has @attack.CurrentMonsterHp HealthPoints</p>
+                                  </div>
+                              </div>
+                          }
+                      </div>
+                  }
+                  <div class="battle-result">
+                      <div class="winner"><h4>Winner @Model.Battle!.Winner!.Name</h4> Health Points @Model.Battle.Winner.HealthPoints</div>
+                      <div class="looser"><h4>Looser @Model.Battle!.Looser!.Name</h4> Health Points @Model.Battle.Looser.HealthPoints</div>
+                  </div>
+              </div>
+          </div>
+          <br>
+          <br>
+          <br>
+      }
+      <div>
+          <form method="post" asp-action="Battle">
+                  <label>Name</label>
+                  <input type="text" asp-for="Hero.Name"/><br>
+                  <label>HitPoints</label>
+                  <input type="number" asp-for="Hero.HealthPoints"/><br>
+                  <label>Attack modifier</label>
+                  <input type="number" asp-for="Hero.AttackModifier"/><br>
+                  <label>Attack Per Round</label>
+                  <input type="number" asp-for="Hero.AttackPerRound"/><br>
+                  <label>Damage</label>
+                  <input type="number" asp-for="Hero.DamageCubesNumber"/>d
+                  <input type="number" asp-for="Hero.DamageCubeCost"/><br>
+                  <label>Damage modifier</label>
+                  <input type="number" asp-for="Hero.DamageModifier"/><br>
+                  <label>Armor class</label>
+                  <input type="number" asp-for="Hero.ArmorClass"/><br>
+                  <button type="submit" @(Model.Hero.HealthPoints<=0?"disabled":"")>Battle!</button><br>
+              </form>
+      </div>
+</div>
+</body>
+</html>
